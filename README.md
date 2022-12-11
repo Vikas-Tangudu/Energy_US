@@ -13,9 +13,9 @@ Interactive way of analysis for ad-hoc reports that goes well with Storage Solut
 Finding a way to script out some of the common data analysis tasks
 
 Goal -1 :
-Identify the storage system which you would like to use as a part of POC
-Ensure you increase the availability of data in data storage
-Data stored should be accessible to write scripts and create interactive queries for ad-hoc requests
+1. Identify the storage system which you would like to use as a part of POC
+2. Ensure you increase the availability of data in data storage
+3. Data stored should be accessible to write scripts and create interactive queries for ad-hoc requests
 
 
 Goal - 2 :
