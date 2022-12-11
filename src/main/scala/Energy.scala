@@ -103,7 +103,7 @@ object Energy {
 //    puresql.show()
 
     // Partitions by month ******************************************
-    energy_v3.repartition("month").rdd.getNumPartitions
+   // energy_v3.repartition("month").rdd.getNumPartitions
 
   }
 }

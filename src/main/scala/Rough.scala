@@ -58,9 +58,9 @@ object Rough {
 
     // get all the file names in the directory
     val filenames = getallfiles(new File("C:\\Users\\91918\\Desktop\\prod_energy_V2").listFiles)
-    //    //for (i <- 0 to filenames.length - 1) {
-    //      println(filenames(i))
-    //    }
+        for (i <- 0 to filenames.length - 1) {
+          println(filenames(i))
+        }
     val spark = SparkSession
       .builder
       .appName("WordCount")
@@ -68,45 +68,45 @@ object Rough {
       .getOrCreate()
 
     // Create a SparkSession using every core of the local machine
-    import spark.implicits._
-    val input = spark.sparkContext.textFile(filenames(0))
-    val energy = input.map(mapper).toDS().withColumn("file_name", input_file_name().cast(StringType))
-    println(energy.count())
-    energy.show()
+//    import spark.implicits._
+//    val input = spark.sparkContext.textFile(filenames(0))
+//    val energy = input.map(mapper).toDS().withColumn("file_name", input_file_name().cast(StringType))
+//    println(energy.count())
+//    energy.show()
 
     //    for (i <- 1 to filenames.length-1) {
     //      val input = spark.sparkContext.textFile(filenames(i))
     //      val tempdf = input.map(mapper).toDS().withColumn("file_name", input_file_name().cast(StringType))
     //      energy.unionAll(tempdf)
     //    }
-    val input2 = spark.sparkContext.textFile(filenames(1))
-    println(input2.count())
-    val tempdf = input2.map(mapper).toDS().withColumn("file_name", input_file_name().cast(StringType))
-    tempdf.show()
-    energy.union(tempdf)
-
-    println(energy.count())
-    println(input.getClass)
-    println(energy.getClass)
+//    val input2 = spark.sparkContext.textFile(filenames(1))
+//    println(input2.count())
+//    val tempdf = input2.map(mapper).toDS().withColumn("file_name", input_file_name().cast(StringType))
+//    tempdf.show()
+//    energy.union(tempdf)
+//
+//    println(energy.count())
+//    println(input.getClass)
+//    println(energy.getClass)
 
 
 
     println("*****************************")
 
-    def getmyrdd(inputpath: String): RDD[String] = {
-      val RDD = spark.sparkContext.textFile(inputpath)
-      RDD
-    }
-
-    val placeslist = ListBuffer[RDD[String]]()
-    for (i <- 0 until filenames.size) {
-      placeslist += getmyrdd(filenames(i))
-    }
-    val energy_rdd = placeslist.reduce(_ union _)
-    println(energy_rdd.count())
-    val energy2 = energy_rdd.map(mapper).toDS().withColumn("file_name", input_file_name().cast(StringType))
-    println(energy_rdd.getClass)
-    println(energy2.getClass)
+//    def getmyrdd(inputpath: String): RDD[String] = {
+//      val RDD = spark.sparkContext.textFile(inputpath)
+//      RDD
+//    }
+//
+//    val placeslist = ListBuffer[RDD[String]]()
+//    for (i <- 0 until filenames.size) {
+//      placeslist += getmyrdd(filenames(i))
+//    }
+//    val energy_rdd = placeslist.reduce(_ union _)
+//    println(energy_rdd.count())
+//    val energy2 = energy_rdd.map(mapper).toDS().withColumn("file_name", input_file_name().cast(StringType))
+//    println(energy_rdd.getClass)
+//    println(energy2.getClass)
     //)
 //    val energy_v3 = energy_v2.dropDuplicates("Time", "building_name", "facility_hourly", "electricity", "gas", "facility_monthly", "place") //--- 1962204 , 36 duplicates.
 //
