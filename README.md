@@ -23,12 +23,12 @@ Create a query that gives you the monthly consumption of all the buildings in "U
 
 
 Goal - 3 :
-Create a data frame will all files across all folders.
-Add a column that contains the filename to this data frame.
-Find and remove any duplicate rows available in the dataset
-Get column-wise null records for the data frame
-Partition of the resultant data frame by month
-Get the number of rows from each partition
+1. Create a data frame will all files across all folders.
+2. Add a column that contains the filename to this data frame.
+3. Find and remove any duplicate rows available in the dataset
+4. Get column-wise null records for the data frame
+5. Partition of the resultant data frame by month
+6. Get the number of rows from each partition
 
 
 Also I only have bare minimum knowledge about Spark while working on this, so it also acts as a Level-0 in spark. This helps me know how much I have grown into spark optimizations in future.
