@@ -1,3 +1,4 @@
+import Custom_Utilities._
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql._
@@ -6,46 +7,8 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.StringType
 import scala.collection.mutable.ListBuffer
 import java.io.File
-import org.apache.spark.sql.SQLContext
+
 object Energy {
-  def getallfiles(dirs: Array[File]): ListBuffer[String] = {
-    val filenames: ListBuffer[String] = ListBuffer[String]()
-    for (i <- 0 to dirs.length - 1) {
-      if (dirs(i).isDirectory) {
-        val files: Array[File] = new File(dirs(i).toString).listFiles
-        for (k <- 0 to files.length - 1) {
-          filenames += files(k).toString
-        }
-      }
-    }
-    filenames
-  }
-
-  case class facility_hourly(electricity: Double, gas: Double)
-  case class electricity(fans: Double, cooling: Double, heating: Double, interiorlights: Double, interiorequipment: Double)
-  case class gas(heating: Double, interiorequipment: Double, waterheater: Double)
-  case class facility_monthly(electricity: Double, gas: Double)
-  case class energy_schema(Time: String, month: Integer, day: Integer, hour: Integer, building_name: String, facility_hourly: facility_hourly, electricity: electricity, gas: gas, facility_monthly: facility_monthly)
-
-  def mapper(line: String): energy_schema = {
-    //Null values are replaced by -1: Null = -1
-    val fields = line.replace("\\N","-1.0")split(',')
-    val f_hourly = fields(5).split('$')
-    val ele = fields(6).split('$')
-    val gs = fields(7).split('$')
-    val f_monthly = fields(8).split('$')
-
-    val F_hourly:facility_hourly  = facility_hourly(f_hourly(0).toDouble,f_hourly(1).toDouble)
-    val ELE : electricity = electricity(ele(0).toDouble,ele(1).toDouble,ele(2).toDouble,ele(3).toDouble,ele(4).toDouble)
-    val GS : gas = gas(gs(0).toDouble,gs(1).toDouble,gs(2).toDouble)
-    val F_monthly:facility_monthly  = facility_monthly(f_monthly(0).toDouble,f_monthly(1).toDouble)
-
-
-    val schema: energy_schema = energy_schema(fields(0), fields(1).toInt, fields(2).toInt,
-                                              fields(3).toInt,fields(4),F_hourly,ELE,GS,F_monthly)
-    schema
-  }
-
   def main(args: Array[String]): Unit = {
     // Set the log level to only print errors
     Logger.getLogger("org").setLevel(Level.ERROR)
@@ -77,14 +40,14 @@ object Energy {
     val energy_v2 = energy_v1.select(
                                      col("Time"), col("month"),
                                      col("day"), col("hour"), col("building_name"),col("facility_hourly"),
-                                     col("electricity"),col("gas"), col("facility_monthly"),
+                                     col("electricity"),col("gas"), col("facility_monthly"), col("file_name"),
                                      regexp_replace(split(col("file_name"),"/")(6),"place=","").as("place")
                                      )
     // Removing Duplicate Rows ********************************
     val energy_v3 = energy_v2.dropDuplicates("Time","building_name","facility_hourly","electricity","gas","facility_monthly","place") //--- 1962204 , 36 duplicates.
 
     // Column wise Nulls (Nulls in our case = -1.0 ) ***********************************
-//    energy_v3.createOrReplaceTempView("vw_energy")
+    //energy_v3.createOrReplaceTempView("vw_energy")
 //    val puresql = spark.sql("select " +
 //      "sum(case when facility_hourly.electricity < 0 then 1 else 0 end) facility_hourly_electricity," +
 //      "sum(case when facility_hourly.gas < 0 then 1 else 0 end) facility_hourly_gas," +
@@ -100,10 +63,18 @@ object Energy {
 //      "sum(case when facility_monthly.gas < 0 then 1 else 0 end) facility_monthly_gas" +
 //      " from vw_energy"
 //    )
-//    puresql.show()
+   // val puresql = spark.sql("select distinct(month) from vw_energy")
+   // puresql.show()
 
     // Partitions by month ******************************************
-   // energy_v3.repartition("month").rdd.getNumPartitions
+    println("Before partition : " + energy_v3.rdd.getNumPartitions)
+    energy_v3.repartition(12,$"month").rdd.getNumPartitions
+    println("After partition : " + energy_v3.rdd.getNumPartitions)
+    val partition_wise_counts = energy_v3.withColumn("partition_ID", spark_partition_id())
+      .groupBy("partition_ID")
+      .count()
 
+    println("per-partition counts of records")
+    partition_wise_counts.show()
   }
 }

@@ -113,6 +113,17 @@ object Rough {
 //    energy_v3.createOrReplaceTempView("vw_energy")
 //    val puresql = spark.sql("select \nsum(case when facility_hourly.electricity < 0 then 1 else 0 end) facility_hourly_electricity,\nsum(case when facility_hourly.gas < 0 then 1 else 0 end) facility_hourly_gas,\nsum(case when electricity.fans < 0 then 1 else 0 end) electricity_fans,\nsum(case when electricity.cooling < 0 then 1 else 0 end) electricity_cooling,\nsum(case when electricity.heating < 0 then 1 else 0 end) electricity_heating,\nsum(case when electricity.interiorlights < 0 then 1 else 0 end) electricity_interiorlights,\nsum(case when electricity.interiorequipment < 0 then 1 else 0 end) electricity_interiorequipment,\nsum(case when gas.heating < 0 then 1 else 0 end) gas_heating,\nsum(case when gas.interiorequipment < 0 then 1 else 0 end) gas_interiorequipment,\nsum(case when gas.waterheater < 0 then 1 else 0 end) gas_waterheater,\nsum(case when facility_monthly.electricity < 0 then 1 else 0 end) facility_monthly_electricity,\nsum(case when facility_monthly.gas < 0 then 1 else 0 end) facility_monthly_gas,\nfrom vw_energy")
 //    puresql.show()
+//
+//
+//    // Partitions by month ******************************************
+//    println(energy_v3.rdd.getNumPartitions)
+//    energy_v3.show()
+//    energy_v3.repartition($"month")
+//    println(energy_v3.rdd.getNumPartitions)
+//    val partition_wise_counts = energy_v3.groupBy(spark_partition_id).count().orderBy(desc("count"))
+//
+//    println("per-partition counts of records")
+//    partition_wise_counts.show()
 
   }
 }
